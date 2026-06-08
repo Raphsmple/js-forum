@@ -2,6 +2,19 @@ const button = document.getElementById("publishButton");
 const postInput = document.getElementById("postInput");
 const postsContainer = document.getElementById("postsContainer");
 
+async function loadPosts() {
+    const res = await fetch("/posts");
+    const posts = await res.json();
+
+    postsContainer.innerHTML = "";
+    
+    posts.forEach(post => {
+        const div = document.createElement("div");
+        div.innerText = post.text;
+        postsContainer.appendChild(div);
+    });
+}
+
 
 button.addEventListener("click", async () => {
 
@@ -15,16 +28,9 @@ button.addEventListener("click", async () => {
         body: JSON.stringify({ text })
     });
 
-    const res = await fetch("/posts");
-    const posts = await res.json();
-
-    postsContainer.innerHTML = "";
-
-    posts.forEach(post => {
-        const div = document.createElement("div");
-        div.innerText = post.text;
-        postsContainer.appendChild(div);
-    });
+    await loadPosts();
     
     postInput.value = "";
 });
+
+loadPosts();
