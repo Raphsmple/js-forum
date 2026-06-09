@@ -1,5 +1,6 @@
 const button = document.getElementById("publishButton");
 const postInput = document.getElementById("postInput");
+const usernameInput = document.getElementById("usernameInput");
 const postsContainer = document.getElementById("postsContainer");
 
 async function loadPosts() {
@@ -10,7 +11,7 @@ async function loadPosts() {
     
     posts.forEach(post => {
         const div = document.createElement("div");
-        div.innerText = post.text;
+        div.innerText = post.username + " : " + post.text;
         postsContainer.appendChild(div);
     });
 }
@@ -19,13 +20,17 @@ async function loadPosts() {
 button.addEventListener("click", async () => {
 
     const text = postInput.value;
+    const username = usernameInput.value;
 
     await fetch("/posts", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ 
+    username,
+    text
+})
     });
 
     await loadPosts();

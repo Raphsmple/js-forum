@@ -7,6 +7,7 @@ app.use(express.json());
 db.run(`
     CREATE TABLE IF NOT EXISTS posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
         text TEXT
     )
 `);
@@ -23,11 +24,11 @@ app.get("/posts", (req, res) => {
 
 // POST post
 app.post("/posts", (req, res) => {
-    const { text } = req.body;
+    const { username, text } = req.body;
 
     db.run(
-        "INSERT INTO posts (text) VALUES (?)",
-        [text],
+        "INSERT INTO posts (username, text) VALUES (?, ?)",
+        [username, text],
         function (err) {
             if (err) {
                 return res.status(500).json({ error: err.message });
