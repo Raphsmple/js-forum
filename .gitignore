@@ -1,0 +1,6 @@
+node_modules/
+forum.db
+database/
+client/uploads/*
+!client/uploads/.gitkeep
+*.log

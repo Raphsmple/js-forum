@@ -1,45 +1,34 @@
-const express = require("express");
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const path = require('path');
+
+require('./db');
+
 const app = express();
-const db = require("./db");
+const PORT = process.env.PORT || 3000;
 
+app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-db.run(`
-    CREATE TABLE IF NOT EXISTS posts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        text TEXT
-    )
-`);
+app.use(express.static(path.join(__dirname, '..', 'client')));
 
-// GET posts
-app.get("/posts", (req, res) => {
-    db.all("SELECT * FROM posts", [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(rows);
-    });
+app.use('/api', require('./routes'));
+
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(__dirname, '..', 'client', 'index.html'));
 });
 
-// POST post
-app.post("/posts", (req, res) => {
-    const { username, text } = req.body;
-
-    db.run(
-        "INSERT INTO posts (username, text) VALUES (?, ?)",
-        [username, text],
-        function (err) {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            res.json({ success: true, id: this.lastID });
-        }
-    );
+app.use((err, req, res, next) => {
+    if (err.code === 'LIMIT_FILE_SIZE')
+        return res.status(413).json({ error: 'Image trop grande (max 20 Mo)' });
+    if (err.message && err.message.includes('Format'))
+        return res.status(415).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur interne' });
 });
 
-app.use(express.static("client"));
+app.use((req, res) => res.status(404).json({ error: 'Route introuvable' }));
 
-app.listen(3000, () => {
-    console.log("Serveur lancé sur http://localhost:3000");
-});
+app.listen(PORT, () => console.log(`Forum lancé sur http://localhost:${PORT}`));

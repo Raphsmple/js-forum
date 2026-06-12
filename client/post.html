@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post – Forum JS</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">💬 Forum JS</a>
+        <div class="nav-actions" id="navActions">
+            <a href="/login.html" class="btn btn-outline">Connexion</a>
+            <a href="/register.html" class="btn btn-primary">Inscription</a>
+        </div>
+    </nav>
+
+    <div class="container single-post-container">
+        <div id="postDetail" class="post-detail"></div>
+        <div id="commentsSection" class="comments-section">
+            <h3>Commentaires</h3>
+            <div id="commentForm" class="comment-form hidden">
+                <textarea id="commentInput" rows="3" placeholder="Ajouter un commentaire..."></textarea>
+                <button class="btn btn-primary" onclick="submitComment()">Commenter</button>
+            </div>
+            <p id="loginPrompt" class="login-prompt hidden">
+                <a href="/login.html">Connectez-vous</a> pour commenter.
+            </p>
+            <div id="commentsList"></div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/post.js"></script>
+</body>
+</html>

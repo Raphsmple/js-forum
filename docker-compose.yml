@@ -1,0 +1,9 @@
+services:
+  forum:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./forum.db:/app/forum.db
+      - ./client/uploads:/app/client/uploads
+    restart: unless-stopped
