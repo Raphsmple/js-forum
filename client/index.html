@@ -3,62 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum JS</title>
+    <title>FORUM_JS — Le forum du futur</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+    <!-- Animated background scene -->
+    <div class="bg-scene" aria-hidden="true">
+        <div class="stars"></div>
+        <div class="stars stars-2"></div>
+        <div class="orb orb-violet"></div>
+        <div class="orb orb-cyan"></div>
+        <div class="orb orb-rose"></div>
+        <div class="bg-grid"></div>
+        <div class="scanline"></div>
+    </div>
+
     <nav class="navbar">
-        <a href="/" class="logo">💬 Forum JS</a>
+        <a href="/" class="logo glitch" data-text="FORUM_JS">
+            <svg viewBox="0 0 24 24" fill="none" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stop-color="#7c3aed"/>
+                        <stop offset="1" stop-color="#06b6d4"/>
+                    </linearGradient>
+                </defs>
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/>
+            </svg>
+            FORUM_JS
+        </a>
         <div class="nav-actions" id="navActions">
             <a href="/login.html" class="btn btn-outline">Connexion</a>
             <a href="/register.html" class="btn btn-primary">Inscription</a>
         </div>
     </nav>
 
+    <!-- Hero -->
+    <header class="hero">
+        <p class="hero-kicker">// bienvenue dans le flux</p>
+        <h1 class="hero-title">LE FORUM <span class="grad-text">DU FUTUR</span></h1>
+        <p class="hero-sub"><span id="typewriter"></span><span class="caret" aria-hidden="true"></span></p>
+    </header>
+
     <div class="container">
-        <div class="sidebar">
-            <h3>Filtres</h3>
-            <ul class="filter-list">
-                <li><a href="#" class="filter-link active" data-filter="all">Tous les posts</a></li>
-                <li id="myPostsFilter" style="display:none">
-                    <a href="#" class="filter-link" data-filter="my">Mes posts</a>
-                </li>
-                <li id="likedPostsFilter" style="display:none">
-                    <a href="#" class="filter-link" data-filter="liked">Posts aimés</a>
-                </li>
-            </ul>
-            <h3 style="margin-top:1.5rem">Catégories</h3>
-            <ul class="filter-list" id="categoryList"></ul>
-        </div>
+        <aside class="sidebar">
+            <div class="glass-panel reveal">
+                <h3>Réseau en direct</h3>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-value" id="statPosts">0</div>
+                        <div class="stat-label">Posts</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="statUsers">0</div>
+                        <div class="stat-label">Membres</div>
+                    </div>
+                    <div class="stat stat-online">
+                        <div class="stat-value"><span class="online-dot"></span><span id="statOnline">0</span></div>
+                        <div class="stat-label">En ligne</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="statVotes">0</div>
+                        <div class="stat-label">Votes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel reveal">
+                <h3>Filtres</h3>
+                <ul class="filter-list">
+                    <li><a href="#" class="filter-link active" data-filter="all">Tous les posts</a></li>
+                    <li id="myPostsFilter" style="display:none">
+                        <a href="#" class="filter-link" data-filter="my">Mes posts</a>
+                    </li>
+                    <li id="likedPostsFilter" style="display:none">
+                        <a href="#" class="filter-link" data-filter="liked">Posts aimés</a>
+                    </li>
+                </ul>
+                <h3 style="margin-top:1.5rem">Catégories</h3>
+                <ul class="filter-list" id="categoryList"></ul>
+            </div>
+        </aside>
 
         <main class="main-content">
             <div class="posts-header">
                 <h2 id="postsTitle">Tous les posts</h2>
-                <button id="newPostBtn" class="btn btn-primary" style="display:none" onclick="openPostModal()">+ Nouveau post</button>
             </div>
             <div id="postsContainer" class="posts-grid"></div>
         </main>
     </div>
 
+    <!-- FAB : nouveau post -->
+    <button id="newPostBtn" class="fab" style="display:none" onclick="openPostModal()" aria-label="Créer un nouveau post" title="Nouveau post">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+    </button>
+
     <!-- Modal nouveau post -->
     <div id="postModal" class="modal hidden">
         <div class="modal-box">
-            <h2>Nouveau post</h2>
+            <h2>// Nouveau post</h2>
             <form id="postForm" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label>Titre *</label>
+                    <label for="postTitle">Titre *</label>
                     <input type="text" id="postTitle" required placeholder="Titre du post">
                 </div>
                 <div class="form-group">
-                    <label>Contenu *</label>
-                    <textarea id="postContent" required rows="5" placeholder="Contenu..."></textarea>
+                    <label for="postContent">Contenu *</label>
+                    <textarea id="postContent" required rows="5" placeholder="Transmets ton message au réseau…"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Catégories</label>
                     <div id="categoryCheckboxes" class="checkbox-group"></div>
                 </div>
                 <div class="form-group">
-                    <label>Image (optionnel – JPEG/PNG/GIF, max 20 Mo)</label>
+                    <label for="postImage">Image (optionnel – JPEG/PNG/GIF, max 20 Mo)</label>
                     <input type="file" id="postImage" accept="image/jpeg,image/png,image/gif">
                 </div>
                 <p id="postError" class="error-msg"></p>
@@ -71,6 +133,7 @@
     </div>
 
     <script src="/js/api.js"></script>
+    <script src="/js/animations.js"></script>
     <script src="/js/index.js"></script>
 </body>
 </html>

@@ -20,7 +20,7 @@ function updateNav() {
     const nav = document.getElementById('navActions');
     if (currentUser) {
         nav.innerHTML = `
-            <span class="nav-user">👤 ${escHtml(currentUser.username)}</span>
+            <span class="nav-user">${FX.avatarHTML(currentUser.username, true)} ${escHtml(currentUser.username)}</span>
             <button class="btn btn-outline" onclick="doLogout()">Déconnexion</button>`;
     }
 }
@@ -62,40 +62,42 @@ function onFilterClick(e) {
 
 async function loadPosts() {
     const container = document.getElementById('postsContainer');
-    container.innerHTML = '<p class="loading">Chargement...</p>';
+    container.innerHTML = FX.loaderHTML('Chargement du flux…');
     try {
         const params = {};
         if (activeFilter.type === 'category') params.category = activeFilter.value;
         else if (activeFilter.type === 'my') params.my = 'true';
         else if (activeFilter.type === 'liked') params.liked = 'true';
         const posts = await API.getPosts(params);
-        if (posts.length === 0) { container.innerHTML = '<p class="loading">Aucun post.</p>'; return; }
+        document.dispatchEvent(new CustomEvent('posts:loaded', { detail: { posts } }));
+        if (posts.length === 0) { container.innerHTML = '<p class="loading">// Aucun signal détecté</p>'; return; }
         container.innerHTML = posts.map(renderPostCard).join('');
     } catch (e) { container.innerHTML = `<p class="error-msg">${e.message}</p>`; }
 }
 
 function renderPostCard(p) {
     const tags = p.categories.map(c => `<span class="tag">${escHtml(c)}</span>`).join('');
-    const img = p.image_path ? `<img class="post-image" src="${escHtml(p.image_path)}" alt="">` : '';
+    const img = p.image_path ? `<div class="post-image-wrap"><img class="post-image" src="${escHtml(p.image_path)}" alt="Illustration du post" loading="lazy"></div>` : '';
     const excerpt = p.content.length > 150 ? escHtml(p.content.slice(0, 150)) + '…' : escHtml(p.content);
     return `
-    <div class="post-card">
+    <article class="post-card" style="${FX.gradientVars(p.username + '#' + p.id)}">
         <a href="/post.html?id=${p.id}" class="post-card-link">
             ${img}
             <div class="post-meta">
+                ${FX.avatarHTML(p.username)}
                 <span class="post-author">${escHtml(p.username)}</span>
-                <span>${timeAgo(p.created_at)}</span>
+                <span class="post-time">${timeAgo(p.created_at)}</span>
             </div>
             <div class="post-title">${escHtml(p.title)}</div>
             <div class="post-excerpt">${excerpt}</div>
             ${tags ? `<div class="tags">${tags}</div>` : ''}
         </a>
         <div class="post-footer">
-            <button class="vote-btn ${p.userVote==='like'?'active-like':''}" onclick="votePost(${p.id},'like',this)">👍 ${p.likes}</button>
-            <button class="vote-btn ${p.userVote==='dislike'?'active-dislike':''}" onclick="votePost(${p.id},'dislike',this)">👎 ${p.dislikes}</button>
-            <span>💬 ${p.comment_count}</span>
+            <button class="vote-btn ${p.userVote==='like'?'active-like':''}" aria-label="J'aime" onclick="votePost(${p.id},'like',this)">${FX.icon('like')} ${p.likes}</button>
+            <button class="vote-btn ${p.userVote==='dislike'?'active-dislike':''}" aria-label="Je n'aime pas" onclick="votePost(${p.id},'dislike',this)">${FX.icon('dislike')} ${p.dislikes}</button>
+            <span class="comment-count">${FX.icon('comment')} ${p.comment_count}</span>
         </div>
-    </div>`;
+    </article>`;
 }
 
 async function votePost(id, type, btn) {
